@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IIIT Bhubaneswar - MessMate | Smart Mess Management System</title>
+  <meta name="description" content="Official Mess Management & Dining Portal for IIIT Bhubaneswar. Digital QR meal coupons, weekly nutritional menus, automatic leave rebate deductions, hygiene audits and grievance tracking.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Top Academic Institution Header -->
+    <header class="top-bar-institute">
+      <div class="institute-meta">
+        <span>🏛️ <strong>IIIT Bhubaneswar</strong> (Autonomous Institute of Govt. of Odisha)</span>
+        <span style="opacity: 0.8;">| Campus: Gothapatna, Malipada, Bhubaneswar</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="ticker-wrap">
+          <span class="pulse-dot"></span>
+          <span id="tickerNoticeText">📢 Welcome to MessMate - IIIT Bhubaneswar Smart Dining Portal</span>
+        </div>
+        <div style="font-family: monospace; font-weight: 700; background: rgba(0,0,0,0.25); padding: 0.2rem 0.6rem; border-radius: 4px;" id="liveClock">
+          --:--:--
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Navigation Bar -->
+    <nav class="main-navbar">
+      <div class="navbar-brand">
+        <img src="assets/logo.svg" alt="IIIT Bhubaneswar MessMate" class="brand-logo-img">
+      </div>
+
+      <!-- Role Switcher -->
+      <div class="role-switcher-badge">
+        <button class="role-btn active" data-role="student" title="Student Dining & Rebate Portal">
+          👨‍🎓 Student
+        </button>
+        <button class="role-btn" data-role="manager" title="Mess Manager & Headcount Counter">
+          👨‍🍳 Mess Manager
+        </button>
+        <button class="role-btn" data-role="warden" title="Chief Warden & Mess Committee">
+          🏛️ Warden / Admin
+        </button>
+        <button class="role-btn" data-role="guest" title="Visitor & Guest Meal Coupons">
+          🏷️ Guest Pass
+        </button>
+      </div>
+
+      <!-- User & Utilities Actions -->
+      <div class="navbar-actions">
+        <button class="nav-icon-btn" id="soundToggleBtn" title="Toggle Sound Feedback">
+          🔔
+        </button>
+        <button class="nav-icon-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme">
+          🌙
+        </button>
+        <div class="user-profile-pill" id="userProfilePill">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </nav>
+
+    <!-- Real-time Mess & Crowd Status Strip -->
+    <section class="live-status-strip">
+      <div class="live-slot-indicator">
+        <span style="font-weight: 600; color: var(--text-muted);">Serving Right Now:</span>
+        <span class="slot-tag" id="activeMealTag">Dinner</span>
+        <span style="font-size: 0.8rem; color: var(--text-subtle);">(Standard timings apply)</span>
+      </div>
+      <div class="mess-crowd-badges" id="liveCrowdBadges">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- Main Application Container -->
+    <main class="main-content">
+
+      <!-- ===================================================================
+           ROLE 1: STUDENT PORTAL VIEW
+           =================================================================== -->
+      <div id="studentPortalView">
+        
+        <!-- Navigation Tabs -->
+        <div class="portal-nav-tabs">
+          <button class="portal-tab-btn student-tab-btn active" data-tab="overview">
+            🎫 Daily Token &amp; Live Crowd
+          </button>
+          <button class="portal-tab-btn student-tab-btn" data-tab="menu">
+            📅 Weekly Interactive Menu
+          </button>
+          <button class="portal-tab-btn student-tab-btn" data-tab="rebate">
+            🏖️ Leave Rebate Application
+          </button>
+          <button class="portal-tab-btn student-tab-btn" data-tab="billing">
+            💳 Mess Bill &amp; Online Pay
+          </button>
+          <button class="portal-tab-btn student-tab-btn" data-tab="canteen">
+            🌯 Night Canteen &amp; Extras
+          </button>
+          <button class="portal-tab-btn student-tab-btn" data-tab="poll">
+            🗳️ Sunday Feast Poll
+          </button>
+          <button class="portal-tab-btn student-tab-btn" data-tab="grievance">
+            📝 Food Quality &amp; Grievances
+          </button>
+        </div>
+
+        <!-- Student Tab 1: Overview & Meal Token -->
+        <div id="studentSection_overview">
+          <!-- Hero Banner -->
+          <div class="hero-welcome-card" style="margin-bottom: 1.5rem;">
+            <div>
+              <span class="hero-badge-tag">IIIT-Bh Student Dining Portal</span>
+              <h2>Welcome back, <span id="studentWelcomeName">Sourav Mohapatra</span>!</h2>
+              <p>Your digital QR meal coupon is generated for the active meal slot. Show this coupon at the mess counter or use automatic plate punch.</p>
+              <div style="margin-top: 0.75rem; font-size: 0.85rem; font-weight: 600; color: #f8fafc;" id="studentHostelBadge">
+                Mahanadi (BH-1) • Room 304 • Central Mess
+              </div>
+            </div>
+            <div class="hero-actions">
+              <button class="btn btn-outline-white" onclick="document.querySelector('[data-tab=rebate]').click();">
+                🏖️ Apply for Rebate
+              </button>
+              <button class="btn btn-saffron" onclick="document.querySelector('[data-tab=menu]').click();">
+                🍽️ View Full Menu
+              </button>
+            </div>
+          </div>
+
+          <!-- Overview Grid -->
+          <div class="grid-cols-12">
+            
+            <!-- Left: Dynamic QR Meal Coupon Card -->
+            <div class="col-span-5">
+              <div class="qr-token-card active-meal">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <span class="status-badge normal">Valid Digital Pass</span>
+                  <span style="font-size: 0.75rem; font-weight: 700; color: var(--iiitb-blue);" id="tokenTimeDisplay">07:30 - 09:45 PM</span>
+                </div>
+
+                <div class="qr-glow-frame">
+                  <canvas id="tokenQrCanvas" width="190" height="190"></canvas>
+                </div>
+
+                <div class="watermark-ticker" id="tokenCodeDisplay">IIITB-DIN-B121045-711</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem;">
+                  Security Anti-Spoof Dynamic Token (Updates every 60s)
+                </div>
+
+                <div class="token-meta-grid">
+                  <div class="token-meta-item">
+                    <div class="meta-label">Student Roll No</div>
+                    <div class="meta-val" id="tokenRollDisplay">B121045</div>
+                  </div>
+                  <div class="token-meta-item">
+                    <div class="meta-label">Active Meal</div>
+                    <div class="meta-val" id="tokenMealDisplay">Dinner</div>
+                  </div>
+                  <div class="token-meta-item">
+                    <div class="meta-label">Hostel Wing</div>
+                    <div class="meta-val" id="tokenHostelDisplay">Mahanadi (BH-1)</div>
+                  </div>
+                  <div class="token-meta-item">
+                    <div class="meta-label">Dietary Type</div>
+                    <div class="meta-val" style="color: var(--diet-nonveg);">Non-Veg / Veg</div>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem;">
+                  <button class="btn btn-primary btn-sm" id="btnPunchTokenSim" style="flex: 1;">
+                    ⚡ Tap to Punch Plate Token
+                  </button>
+                  <button class="btn btn-outline btn-sm" onclick="window.print();" title="Print Coupon">
+                    🖨️
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Today's Serving Highlights & Quick Stats -->
+            <div class="col-span-7">
+              <div class="card" style="margin-bottom: 1.25rem;">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title" id="currentMealTitle">Today's Dinner Menu</div>
+                    <div class="card-subtitle" id="currentMealHighlight">Odisha rustic chicken curry &amp; soft hot gulab jamun</div>
+                  </div>
+                  <button class="btn btn-outline btn-sm" onclick="document.querySelector('[data-tab=menu]').click();">
+                    Full Week &rarr;
+                  </button>
+                </div>
+                <ul class="meal-items-list" id="currentMealItemsPreview">
+                  <!-- Injected via JS -->
+                </ul>
+              </div>
+
+              <!-- Quick Summary Cards -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="card" style="border-left: 4px solid var(--color-success);">
+                  <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Mess Rebate Balance</div>
+                  <div style="font-size: 1.6rem; font-weight: 800; color: var(--color-success); margin: 0.25rem 0;">₹480 Saved</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">4 Days approved leave credited this month</div>
+                </div>
+                <div class="card" style="border-left: 4px solid var(--iiitb-blue);">
+                  <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Central Mess Hygiene</div>
+                  <div style="font-size: 1.6rem; font-weight: 800; color: var(--iiitb-blue); margin: 0.25rem 0;">91.4 / 100</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Grade A (FSSAI Verified Audit on 6th Nov)</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Student Tab 2: Weekly Interactive Menu -->
+        <div id="studentSection_menu" style="display: none;">
+          <div class="menu-filter-bar">
+            <div>
+              <h3 style="font-size: 1.2rem; font-weight: 800;">7-Day Comprehensive Mess Menu</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Nutritional macros, allergens, and authentic Odisha culinary specialties</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Diet:</span>
+              <button class="btn btn-outline btn-sm menu-diet-filter active" data-filter="all">All</button>
+              <button class="btn btn-outline btn-sm menu-diet-filter" data-filter="veg">🥬 Veg Only</button>
+              <button class="btn btn-outline btn-sm menu-diet-filter" data-filter="non-veg">🍗 Non-Veg</button>
+            </div>
+          </div>
+
+          <!-- Day Selector Pills -->
+          <div class="day-pills-wrap" id="menuDayPills" style="margin-bottom: 1.25rem;">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- 4 Meal Slots Grid -->
+          <div class="meal-slot-grid" id="weeklyMealSlotsGrid">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Student Tab 3: Rebate & Leave Application -->
+        <div id="studentSection_rebate" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <div>
+              <h3 style="font-size: 1.2rem; font-weight: 800;">Mess Rebate &amp; Leave System</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Apply for leave rebates at least 24 hours in advance. Fixed rebate rate: <strong>₹120/day</strong> (minimum 2 days leave required).</p>
+            </div>
+            <button class="btn btn-primary" id="btnOpenRebateModal">
+              + Apply for New Rebate
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="table-responsive">
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>Rebate ID</th>
+                    <th>Leave Dates</th>
+                    <th>Duration</th>
+                    <th>Rebate Credit</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Verification</th>
+                  </tr>
+                </thead>
+                <tbody id="studentRebateTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Tab 4: Mess Bill & Online Pay -->
+        <div id="studentSection_billing" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <div>
+              <h3 style="font-size: 1.2rem; font-weight: 800;">Monthly Mess Bill &amp; Accounts Ledger</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Real-time ledger accounting base fees, canteen extras, and approved leave rebate deductions.</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-outline" id="btnPrintReceipt">
+                🖨️ Print Official Receipt
+              </button>
+              <button class="btn btn-success" id="btnOpenPayModal">
+                💳 Pay Net Mess Bill
+              </button>
+            </div>
+          </div>
+
+          <div class="grid-cols-12">
+            <div class="col-span-8">
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">Statement for Month of November 2026</div>
+                  <span class="status-badge normal">Account Active</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.95rem;">
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                    <span>Base Hostel Mess Subscription (30 Days)</span>
+                    <strong id="billBaseFee">₹3,600</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; color: var(--color-danger);">
+                    <span>Approved Leave Rebates (Credited)</span>
+                    <strong id="billRebateDeduction">-₹480</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                    <span>Night Canteen &amp; Extras Add-on Purchases</span>
+                    <strong id="billExtrasTotal">+₹185</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 800; color: var(--iiitb-blue); padding-top: 0.5rem;">
+                    <span>Total Net Amount Payable:</span>
+                    <span id="billNetPayable">₹3,305</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-span-4">
+              <div class="card" style="text-align: center; background: var(--bg-tertiary);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏛️</div>
+                <h4 style="font-weight: 800; font-size: 1.05rem;">IIIT-Bh Mess Bank Details</h4>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin: 0.75rem 0; line-height: 1.6; text-align: left;">
+                  <strong>A/C Name:</strong> IIIT Bhubaneswar Mess Committee<br>
+                  <strong>A/C No:</strong> 31289055412<br>
+                  <strong>Bank:</strong> SBI IIIT Campus Branch<br>
+                  <strong>IFSC:</strong> SBIN0016752<br>
+                  <strong>UPI ID:</strong> iiitbmess@sbi
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="MessApp.showToast('UPI ID copied to clipboard: iiitbmess@sbi', 'info');" style="width: 100%;">
+                  Copy UPI ID
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Tab 5: Night Canteen & Extras -->
+        <div id="studentSection_canteen" style="display: none;">
+          <div style="margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 800;">Night Canteen &amp; Daily Extras</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Order extra egg, paneer, rolls, hot beverages, and snacks billed directly to your monthly hostel mess ledger.</p>
+          </div>
+          <div class="canteen-card-grid" id="canteenItemsGrid">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Student Tab 6: Feast Poll -->
+        <div id="studentSection_poll" style="display: none;">
+          <div class="card" style="max-width: 800px; margin: 0 auto;" id="feastPollWrapper">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Student Tab 7: Grievances & Quality Feedback -->
+        <div id="studentSection_grievance" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <div>
+              <h3 style="font-size: 1.2rem; font-weight: 800;">Student Grievance &amp; Food Quality Redressal</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Report hygiene issues, food temperature, water cooler problems or counter delays directly to the Chief Warden and Caterer.</p>
+            </div>
+            <button class="btn btn-primary" id="btnOpenGrievanceModal">
+              📝 Submit New Grievance
+            </button>
+          </div>
+
+          <div id="studentGrievancesList">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===================================================================
+           ROLE 2: MESS MANAGER / CATERER PORTAL VIEW
+           =================================================================== -->
+      <div id="managerPortalView" style="display: none;">
+        <div class="portal-nav-tabs">
+          <button class="portal-tab-btn manager-tab-btn active" data-tab="forecast">
+            📊 Headcount &amp; Plate Forecast
+          </button>
+          <button class="portal-tab-btn manager-tab-btn" data-tab="scanner">
+            📷 Digital Token Scanner Counter
+          </button>
+          <button class="portal-tab-btn manager-tab-btn" data-tab="inventory">
+            📦 Pantry Stock &amp; Raw Materials
+          </button>
+          <button class="portal-tab-btn manager-tab-btn" data-tab="procurements">
+            🧾 Vendor Purchase Invoices
+          </button>
+        </div>
+
+        <!-- Manager Tab 1: Forecast -->
+        <div id="managerSection_forecast">
+          <div class="grid-cols-12" style="margin-bottom: 1.5rem;">
+            <div class="col-span-4">
+              <div class="card" style="border-top: 4px solid var(--iiitb-blue);">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">PROJECTED MEAL HEADCOUNT</div>
+                <div style="font-size: 2.2rem; font-weight: 900; color: var(--iiitb-blue); margin: 0.25rem 0;" id="forecastExpectedPlates">1,338</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">Total 1,450 enrolled minus 112 active rebate leaves</div>
+              </div>
+            </div>
+            <div class="col-span-4">
+              <div class="card" style="border-top: 4px solid var(--color-success);">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">PLATES PUNCHED SO FAR</div>
+                <div style="font-size: 2.2rem; font-weight: 900; color: var(--color-success); margin: 0.25rem 0;" id="forecastPunchedPlates">323</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">Live count across Counters 1, 2, 3 &amp; 4</div>
+              </div>
+            </div>
+            <div class="col-span-4">
+              <div class="card" style="border-top: 4px solid var(--iiitb-saffron);">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">ESTIMATED SURPLUS / WASTE</div>
+                <div style="font-size: 2.2rem; font-weight: 900; color: var(--iiitb-saffron); margin: 0.25rem 0;" id="forecastWasteIndex">&lt; 3.2%</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">Optimized procurement saving ~18 kg food/day</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Counter Real-time Load Balance</div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center;">
+              <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-md);">
+                <h4>Counter 1 (Veg Main)</h4>
+                <div style="font-size: 1.4rem; font-weight: 800; color: var(--color-success); margin: 0.5rem 0;">Normal</div>
+                <small>Wait: 3 mins</small>
+              </div>
+              <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-md);">
+                <h4>Counter 2 (Non-Veg)</h4>
+                <div style="font-size: 1.4rem; font-weight: 800; color: var(--iiitb-saffron); margin: 0.5rem 0;">Brisk</div>
+                <small>Wait: 6 mins</small>
+              </div>
+              <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-md);">
+                <h4>Counter 3 (Roti Tawa)</h4>
+                <div style="font-size: 1.4rem; font-weight: 800; color: var(--color-danger); margin: 0.5rem 0;">High Rush</div>
+                <small>Wait: 9 mins</small>
+              </div>
+              <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-md);">
+                <h4>Counter 4 (Salad / Curd)</h4>
+                <div style="font-size: 1.4rem; font-weight: 800; color: var(--color-success); margin: 0.5rem 0;">Free Flow</div>
+                <small>Wait: 1 min</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manager Tab 2: Token Scanner Counter -->
+        <div id="managerSection_scanner" style="display: none;">
+          <div class="grid-cols-12">
+            <div class="col-span-5">
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">Counter Scanner Simulator</div>
+                </div>
+                <form id="virtualScanForm" style="margin-bottom: 1rem;">
+                  <div class="form-group">
+                    <label class="form-label">Student Token Code or Roll No</label>
+                    <input type="text" class="form-control" id="scanTokenInput" placeholder="e.g. B121045 or IIITB-DIN-..." required>
+                    <div class="form-help">Type student roll number or token code and press Enter to validate plate.</div>
+                  </div>
+                  <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    🔍 Verify &amp; Punch Meal Plate
+                  </button>
+                </form>
+                <div style="font-size: 0.8rem; background: var(--bg-tertiary); padding: 0.75rem; border-radius: var(--radius-sm);">
+                  💡 <strong>Tip for Counter Staff:</strong> System auto-prevents double-punching and verifies active leave rebates.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-span-7">
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">Recent Validated Token Scans</div>
+                </div>
+                <div id="scannerLogList">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manager Tab 3: Pantry Stock -->
+        <div id="managerSection_inventory" style="display: none;">
+          <div style="margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 800;">Central Mess Pantry &amp; Raw Material Inventory</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Real-time tracking of grains, cooking oils, dairy, fuel cylinders, and minimum safety threshold buffers.</p>
+          </div>
+          <div class="card">
+            <div class="table-responsive">
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>Item Description</th>
+                    <th>Category</th>
+                    <th>Current Stock</th>
+                    <th>Buffer Min</th>
+                    <th>Status</th>
+                    <th>Last Restocked</th>
+                    <th>Quick Action</th>
+                  </tr>
+                </thead>
+                <tbody id="inventoryTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manager Tab 4: Procurement Invoices -->
+        <div id="managerSection_procurements" style="display: none;">
+          <div style="margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 800;">Vendor Procurement Register</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Log of wholesale purchases from OMFED dairy, Aiginia mandi, and IOCL commercial gas.</p>
+          </div>
+          <div class="card">
+            <div class="table-responsive">
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>PO Number</th>
+                    <th>Vendor Supplier</th>
+                    <th>Supplied Goods</th>
+                    <th>Total Amount</th>
+                    <th>Invoice Reference</th>
+                    <th>Date</th>
+                    <th>Payment</th>
+                  </tr>
+                </thead>
+                <tbody id="procurementsTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===================================================================
+           ROLE 3: CHIEF WARDEN & MESS COMMITTEE PORTAL VIEW
+           =================================================================== -->
+      <div id="wardenPortalView" style="display: none;">
+        <div class="portal-nav-tabs">
+          <button class="portal-tab-btn warden-tab-btn active" data-tab="audit">
+            ⭐ Hygiene &amp; FSSAI Audit
+          </button>
+          <button class="portal-tab-btn warden-tab-btn" data-tab="rebates">
+            🏖️ Rebate Approvals (Pending)
+          </button>
+          <button class="portal-tab-btn warden-tab-btn" data-tab="grievances">
+            ⚖️ Grievance Redressal Desk
+          </button>
+          <button class="portal-tab-btn warden-tab-btn" data-tab="announcements">
+            📢 Broadcast Circulars
+          </button>
+          <button class="portal-tab-btn warden-tab-btn" data-tab="analytics">
+            📈 Mess Analytics &amp; Reports
+          </button>
+        </div>
+
+        <!-- Warden Tab 1: Audit -->
+        <div id="wardenSection_audit">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <div>
+              <h3 style="font-size: 1.2rem; font-weight: 800;">Mess Hygiene &amp; Food Safety Audit Checklists</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Weekly quality scorecards covering kitchen cleanliness, RO water TDS, cold storage temperatures, and staff hygiene.</p>
+            </div>
+            <button class="btn btn-primary" id="btnOpenNewAuditModal">
+              + Conduct New Inspection Audit
+            </button>
+          </div>
+          <div id="auditHistoryContainer">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Warden Tab 2: Rebates -->
+        <div id="wardenSection_rebates" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <div>
+              <h3 style="font-size: 1.2rem; font-weight: 800;">Student Rebate Review &amp; Approval Desk</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Verify leave dates and reason before crediting rebate deductions to student monthly ledgers.</p>
+            </div>
+            <button class="btn btn-success" id="btnBulkApproveRebates">
+              ✓ Bulk Approve All Pending
+            </button>
+          </div>
+          <div class="card">
+            <div class="table-responsive">
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>Rebate ID</th>
+                    <th>Student Info</th>
+                    <th>Leave Dates</th>
+                    <th>Duration</th>
+                    <th>Credit Amount</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Decision</th>
+                  </tr>
+                </thead>
+                <tbody id="wardenRebateTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Warden Tab 3: Grievances -->
+        <div id="wardenSection_grievances" style="display: none;">
+          <div style="margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 800;">Campus Dining Grievance Resolution Desk</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Review student complaints, issue penalties to caterers, and dispatch maintenance teams.</p>
+          </div>
+          <div id="wardenGrievanceList">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Warden Tab 4: Announcements -->
+        <div id="wardenSection_announcements" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <div>
+              <h3 style="font-size: 1.2rem; font-weight: 800;">Hostel Mess Broadcast Circulars</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Publish notifications for exam timings, maintenance shut-downs, or special holiday feasts.</p>
+            </div>
+            <button class="btn btn-primary" id="btnOpenAnnouncementModal">
+              📢 Broadcast New Announcement
+            </button>
+          </div>
+          <div id="wardenAnnouncementsList">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Warden Tab 5: Analytics -->
+        <div id="wardenSection_analytics" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <div>
+              <h3 style="font-size: 1.2rem; font-weight: 800;">Dining Analytics &amp; Expenditure Breakdown</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Weekly attendance patterns, caterer budget distribution, and food waste audit.</p>
+            </div>
+            <button class="btn btn-outline" onclick="const blob = new Blob([MessStore.exportJSON()], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'iiitb-mess-report.json'; a.click(); MessApp.showToast('Mess dataset exported to JSON file', 'success');">
+              📥 Export Complete Mess Data (JSON)
+            </button>
+          </div>
+          <div class="grid-cols-12">
+            <div class="col-span-7">
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">Weekly Attendance Trends (Breakfast, Lunch, Dinner)</div>
+                </div>
+                <div style="width: 100%; height: 240px; position: relative;">
+                  <canvas id="attendanceChartCanvas"></canvas>
+                </div>
+                <div style="display: flex; justify-content: center; gap: 1.5rem; font-size: 0.78rem; font-weight: 600; margin-top: 0.5rem;">
+                  <span style="color: #2563eb;">■ Breakfast</span>
+                  <span style="color: #f97316;">■ Lunch</span>
+                  <span style="color: #10b981;">■ Dinner</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-5">
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">Monthly Expenditure Allocation</div>
+                </div>
+                <div style="width: 100%; height: 240px; position: relative;">
+                  <canvas id="financialChartCanvas"></canvas>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.78rem; margin-top: 0.5rem;">
+                  <span>🔵 Raw Grocery &amp; Dairy: 62%</span>
+                  <span>🟠 Fuel &amp; LPG Cylinders: 12%</span>
+                  <span>🟢 Staff Wages &amp; Kitchen Hygiene: 18%</span>
+                  <span>🟣 Student Rebates Credited: 8%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===================================================================
+           ROLE 4: GUEST VISITOR PASS VIEW
+           =================================================================== -->
+      <div id="guestPortalView" style="display: none;">
+        <div class="card" style="max-width: 650px; margin: 0 auto; text-align: center;">
+          <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem;">Campus Guest &amp; Visitor Meal Pass</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            Parents, visiting faculty, and guest delegates can purchase single-meal digital tokens for Central, North, or South Mess.
+          </p>
+          <div style="text-align: left; margin-bottom: 1.25rem;">
+            <div class="form-group">
+              <label class="form-label">Visitor / Guest Name</label>
+              <input type="text" class="form-control" id="guestNameInput" placeholder="e.g. Prof. R. K. Jena (Visiting Faculty)">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Meal Slot Selection</label>
+              <select class="form-control" id="guestMealSelect">
+                <option value="Breakfast">Breakfast (07:30 - 09:30 AM) - ₹50</option>
+                <option value="Lunch" selected>Lunch (12:30 - 02:30 PM) - ₹90</option>
+                <option value="Evening Snacks">Evening Snacks (05:00 - 06:30 PM) - ₹40</option>
+                <option value="Dinner">Dinner (07:30 - 09:45 PM) - ₹90</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-lg" id="btnBookGuestToken" style="width: 100%;">
+            🎟️ Generate Digital Guest Pass &amp; QR
+          </button>
+
+          <div id="guestTokenResult" style="display: none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border-color);">
+            <div class="qr-glow-frame">
+              <canvas id="guestTokenQrCanvas" width="180" height="180"></canvas>
+            </div>
+            <h4 style="font-weight: 800; color: var(--color-success); margin-top: 0.5rem;">Pass Confirmed &amp; Valid for Today</h4>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Present this QR pass to the mess contractor at the entrance counter.</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ===================================================================
+         MODALS CONTAINER
+         =================================================================== -->
+
+    <!-- Modal 1: Apply for Rebate -->
+    <div class="modal-backdrop" id="rebateModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Apply for Mess Rebate</div>
+          <button class="modal-close-btn">&times;</button>
+        </div>
+        <form id="rebateApplicationForm">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">Leave Start Date</label>
+              <input type="date" class="form-control" id="rebateStartDate" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Leave End Date</label>
+              <input type="date" class="form-control" id="rebateEndDate" required>
+              <div class="form-help">Minimum 2 consecutive days required. Daily rebate credited: ₹120/day.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Official Purpose / Reason</label>
+              <select class="form-control" id="rebateReason">
+                <option value="Academic Conference / Hackathon">Academic Conference / Hackathon</option>
+                <option value="Semester Break / Home Visit">Semester Break / Home Visit</option>
+                <option value="Internship &amp; Placement Drive">Internship &amp; Placement Drive</option>
+                <option value="Medical Illness / Hospitalization">Medical Illness / Hospitalization</option>
+                <option value="Family Function">Family Function</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="submit" class="btn btn-primary">Submit Application</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 2: Submit Grievance -->
+    <div class="modal-backdrop" id="grievanceModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Lodge Mess Grievance</div>
+          <button class="modal-close-btn">&times;</button>
+        </div>
+        <form id="grievanceForm">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">Grievance Category</label>
+              <select class="form-control" id="grievanceCategory">
+                <option value="Food Quality &amp; Taste">Food Quality &amp; Taste</option>
+                <option value="Food Temperature">Food Temperature (Cold Food)</option>
+                <option value="Kitchen Cleanliness &amp; Insects">Kitchen Cleanliness &amp; Insects</option>
+                <option value="Staff Hygiene &amp; Hairnets">Staff Hygiene &amp; Hairnets</option>
+                <option value="Water Purifier / RO Cooler">Water Purifier / RO Cooler</option>
+                <option value="Counter Delay &amp; Roti Wait">Counter Delay &amp; Roti Wait</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Meal Slot</label>
+              <select class="form-control" id="grievanceMeal">
+                <option value="Breakfast">Breakfast</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Evening Snacks">Evening Snacks</option>
+                <option value="Dinner" selected>Dinner</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subject</label>
+              <input type="text" class="form-control" id="grievanceSubject" placeholder="e.g. Sambar was cold and salty" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Detailed Description</label>
+              <textarea class="form-control" id="grievanceDesc" rows="3" placeholder="Provide details including counter number or time of incident..." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="submit" class="btn btn-danger">Register Grievance</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 3: Online Mess Bill Payment (Simulated UPI) -->
+    <div class="modal-backdrop" id="paymentModal">
+      <div class="modal-content" style="max-width: 480px; text-align: center;">
+        <div class="modal-header">
+          <div class="modal-title">Pay Hostel Mess Bill</div>
+          <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div style="font-size: 0.9rem; color: var(--text-muted);">Amount to Pay:</div>
+          <div style="font-size: 2.2rem; font-weight: 900; color: var(--iiitb-blue); margin: 0.25rem 0;" id="payAmountModalSpan">₹3,305</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Official SBI Campus Payment Gateway for IIIT Bhubaneswar
+          </p>
+
+          <div style="background: #ffffff; padding: 1rem; display: inline-block; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1rem;">
+            <!-- UPI Mock QR -->
+            <img src="assets/logo.svg" alt="UPI QR" style="width: 140px; height: 140px; object-fit: contain;">
+            <div style="font-size: 0.72rem; font-family: monospace; color: #0f172a; margin-top: 0.35rem;">UPI ID: iiitbmess@sbi</div>
+          </div>
+
+          <div class="form-group" style="text-align: left;">
+            <label class="form-label">Payment Mode</label>
+            <select class="form-control" id="paymentMethodSelect">
+              <option value="UPI (Google Pay / PhonePe)">UPI (Google Pay / PhonePe / Paytm)</option>
+              <option value="SBI Net Banking">SBI / HDFC / ICICI Net Banking</option>
+              <option value="Debit Card (RuPay / Visa)">Debit / Credit Card</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+          <button type="button" class="btn btn-success" id="btnConfirmPayment">
+            ✓ Complete &amp; Verify Payment
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 4: Conduct Hygiene Audit (Warden) -->
+    <div class="modal-backdrop" id="auditModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Conduct Mess Hygiene &amp; Safety Audit</div>
+          <button class="modal-close-btn">&times;</button>
+        </div>
+        <form id="newAuditForm">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">Mess Facility</label>
+              <select class="form-control" id="auditMessSelect">
+                <option value="Central Mess (Mahanadi Ground)">Central Mess (Mahanadi Ground)</option>
+                <option value="North Mess (Brahmaputra)">North Mess (Brahmaputra)</option>
+                <option value="South Mess (Daya/Rushikulya)">South Mess (Daya/Rushikulya)</option>
+              </select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label class="form-label">🍽️ Utensils Sanitation (0-100)</label>
+                <input type="number" class="form-control" id="auditS1" min="0" max="100" value="95" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">💧 Water TDS &amp; RO (0-100)</label>
+                <input type="number" class="form-control" id="auditS2" min="0" max="100" value="98" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">🌡️ Storage Temp (0-100)</label>
+                <input type="number" class="form-control" id="auditS3" min="0" max="100" value="92" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">🧤 Staff Hygiene/Nets (0-100)</label>
+                <input type="number" class="form-control" id="auditS4" min="0" max="100" value="90" required>
+              </div>
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label">🗑️ Waste Segregation (0-100)</label>
+                <input type="number" class="form-control" id="auditS5" min="0" max="100" value="94" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Inspection Officer Remarks</label>
+              <textarea class="form-control" id="auditRemarks" rows="2" placeholder="Note down any cleanliness shortcomings or corrective advice..." required>Inspected kitchen cook-line and dish washing area. High standard maintained.</textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Official Audit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 5: Broadcast Announcement (Warden) -->
+    <div class="modal-backdrop" id="announcementModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Broadcast Mess Notice / Circular</div>
+          <button class="modal-close-btn">&times;</button>
+        </div>
+        <form id="newAnnouncementForm">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">Notice Title</label>
+              <input type="text" class="form-control" id="annTitle" placeholder="e.g. Special Feast on Gandhi Jayanti" required>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-control" id="annCategory">
+                  <option value="Exam Schedule">Exam Schedule</option>
+                  <option value="Hygiene">Hygiene &amp; Cleanliness</option>
+                  <option value="Billing">Billing &amp; Rebate</option>
+                  <option value="Feast">Special Dinner Feast</option>
+                  <option value="General">General Notice</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Priority</label>
+                <select class="form-control" id="annPriority">
+                  <option value="Normal">Normal</option>
+                  <option value="High">High (Red Alert)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Circular Content</label>
+              <textarea class="form-control" id="annContent" rows="3" placeholder="Enter circular details..." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="submit" class="btn btn-primary">Publish Announcement</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Printable Invoice Template Area -->
+    <div class="printable-invoice" id="printableInvoiceArea">
+      <!-- Injected when user clicks Print Receipt -->
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <div>
+          <div style="font-weight: 800; color: var(--text-main); margin-bottom: 0.25rem;">
+            Indian Institute of Information Technology Bhubaneswar
+          </div>
+          <div>Gothapatna, PO: Malipada, Bhubaneswar, Odisha 751003, India</div>
+          <div style="margin-top: 0.35rem; font-size: 0.8rem;">
+            Mess Helpline: <strong>+91 674 2653 300</strong> | Email: <strong>mess@iiit-bh.ac.in</strong>
+          </div>
+        </div>
+        <div class="footer-links">
+          <button class="btn btn-outline btn-sm" onclick="if(confirm('Reset all demo data back to factory default?')){MessStore.resetToSeed(); MessApp.showToast('Database reset to fresh demo seed', 'info');}">
+            🔄 Reset Demo Data
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
+            ⬆️ Back to Top
+          </button>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/qr-helper.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

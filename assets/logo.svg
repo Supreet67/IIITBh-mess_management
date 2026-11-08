@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="iiitbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a" />
+      <stop offset="50%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- Crest Icon -->
+  <g transform="translate(15, 10)" filter="url(#shadow)">
+    <!-- Shield Background -->
+    <path d="M50 0 C75 0 95 15 95 40 C95 75 50 96 50 96 C50 96 5 75 5 40 C5 15 25 0 50 0 Z" fill="url(#iiitbGrad)" stroke="#ffffff" stroke-width="2"/>
+    <!-- Inner Accent Rim -->
+    <path d="M50 6 C70 6 88 18 88 38 C88 68 50 88 50 88 C50 88 12 68 12 38 C12 18 30 6 50 6 Z" fill="none" stroke="url(#accentGrad)" stroke-width="1.8" opacity="0.9"/>
+    
+    <!-- Central Cutlery & Flame Icon -->
+    <!-- Fork -->
+    <path d="M35 24 L35 48 M31 24 L31 34 Q31 38 35 38 Q39 38 39 34 L39 24" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    <!-- Spoon -->
+    <path d="M65 24 C60 24 58 29 58 35 C58 40 62 44 64 45 L64 48 M66 45 L66 48" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    <!-- Central Tech/Grain Leaf or Flame -->
+    <circle cx="50" cy="30" r="5" fill="url(#accentGrad)"/>
+    <path d="M50 36 L50 64" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M42 46 Q50 42 50 54" stroke="url(#accentGrad)" stroke-width="2" fill="none"/>
+    <path d="M58 46 Q50 42 50 54" stroke="url(#accentGrad)" stroke-width="2" fill="none"/>
+    <circle cx="50" cy="72" r="3.5" fill="#ffffff"/>
+  </g>
+
+  <!-- Typography -->
+  <!-- Institution Title -->
+  <text x="130" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="20" font-weight="800" fill="#0f172a" letter-spacing="1">
+    IIIT BHUBANESWAR
+  </text>
+  <!-- System Name Badge -->
+  <text x="130" y="68" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="24" font-weight="900" fill="url(#iiitbGrad)">
+    Mess<tspan fill="#f97316">Mate</tspan> <tspan font-size="14" font-weight="600" fill="#64748b" letter-spacing="2">| SMART MESS OS</tspan>
+  </text>
+  <!-- Sub-tagline -->
+  <text x="130" y="92" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#64748b" letter-spacing="0.5">
+    Hostel Dining, Digital Rebates &amp; Quality Audit Portal
+  </text>
+</svg>
